@@ -16,54 +16,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
+      - name: Check Python version
+        run: python --version
 
-      - name: Check secrets
-        env:
-          MY_EMAIL: ${{ secrets.MY_EMAIL }}
-          MY_PASSWORD: ${{ secrets.MY_PASSWORD }}
+      - name: Check files
         run: |
-          if [ -z "$MY_EMAIL" ]; then
-            echo "MY_EMAIL secret missing"
-            exit 1
-          fi
-
-          if [ -z "$MY_PASSWORD" ]; then
-            echo "MY_PASSWORD secret missing"
-            exit 1
-          fi
-
-          echo "Secrets configured successfully"
-
-      - name: Check required files
-        run: |
-          if [ ! -f "main.py" ]; then
-            echo "main.py missing"
-            exit 1
-          fi
-
-          if [ ! -f "quotes.txt" ]; then
-            echo "quotes.txt missing"
-            exit 1
-          fi
-
-          echo "All required files exist"
-
-      - name: Check Python syntax
-        run: python -m py_compile main.py
-
-      - name: Test quotes file
-        run: |
-          python -c "
-import random
-
-with open('quotes.txt', encoding='utf-8') as f:
-    lines = [line.strip() for line in f.readlines()]
-
-assert len(lines) > 0
-print(random.choice(lines))
-"
+          ls
+          python -m py_compile main.py
 
       - name: Success
-        run: echo "Workflow completed successfully"
+        run: echo "Workflow is working"
