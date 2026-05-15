@@ -14,27 +14,27 @@ import os
 
 now = dt.datetime.now()
 current_day = now.weekday()
-if current_day == 0:
-
-    my_email = os.environ.get("MY_EMAIL")
-    password = os.environ.get('MY_PASSWORD')
 
 
-    with open('quotes.txt', encoding='utf-8') as f:
+my_email = os.environ.get("MY_EMAIL")
+password = os.environ.get('MY_PASSWORD')
+
+
+with open('quotes.txt', encoding='utf-8') as f:
         lines = [line.strip() for line in f.readlines()]
 
-    quote = random.choice(lines)
+quote = random.choice(lines)
 
 
-    msg = EmailMessage()
-    msg["Subject"] = 'Daily Quote'
-    msg["From"] = my_email
-    msg["To"] = my_email
+msg = EmailMessage()
+msg["Subject"] = 'Daily Quote'
+msg["From"] = my_email
+msg["To"] = my_email
 
-    msg.set_content(quote)
+msg.set_content(quote)
 
 
-    with smtplib.SMTP('smtp.gmail.com') as connection:
+with smtplib.SMTP('smtp.gmail.com') as connection:
         connection.starttls()
         connection.login(user=my_email,password=password)
         connection.send_message(msg=msg)
