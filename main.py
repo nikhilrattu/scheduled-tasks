@@ -6,33 +6,35 @@
 # See the solution video in the 100 Days of Python Course for explainations.
 
 
-from datetime import datetime
-import pandas
+import datetime as dt
 import random
 import smtplib
+from email.message import EmailMessage
 import os
 
-# import os and use it to get the Github repository secrets
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_PASSWORD = os.environ.get("MY_PASSWORD")
+now = dt.datetime.now()
+current_day = now.weekday()
+if current_day == 0:
 
-today = datetime.now()
-today_tuple = (today.month, today.day)
+    my_email = os.environ.get("MY_EMAIL")
+    password = os.environ.get('MY_PASSWORD')
 
-data = pandas.read_csv("birthdays.csv")
-birthdays_dict = {(data_row["month"], data_row["day"])                  : data_row for (index, data_row) in data.iterrows()}
-if today_tuple in birthdays_dict:
-    birthday_person = birthdays_dict[today_tuple]
-    file_path = f"letter_templates/letter_{random.randint(1, 3)}.txt"
-    with open(file_path) as letter_file:
-        contents = letter_file.read()
-        contents = contents.replace("[NAME]", birthday_person["name"])
 
-    with smtplib.SMTP("YOUR EMAIL PROVIDER SMTP SERVER ADDRESS") as connection:
+    with open('quotes.txt', encoding='utf-8') as f:
+        lines = [line.strip() for line in f.readlines()]
+
+    quote = random.choice(lines)
+
+
+    msg = EmailMessage()
+    msg["Subject"] = 'Daily Quote'
+    msg["From"] = my_email
+    msg["To"] = my_email
+
+    msg.set_content(quote)
+
+
+    with smtplib.SMTP('smtp.gmail.com') as connection:
         connection.starttls()
-        connection.login(MY_EMAIL, MY_PASSWORD)
-        connection.sendmail(
-            from_addr=MY_EMAIL,
-            to_addrs=birthday_person["email"],
-            msg=f"Subject:Happy Birthday!\n\n{contents}"
-        )
+        connection.login(user=my_email,password=password)
+        connection.send_message(msg=msg)
